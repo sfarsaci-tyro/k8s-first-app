@@ -16,7 +16,7 @@ deployToK8s.sh
 teardown.sh
 ```
 
-Create the k8s cluster
+Deploy the app
 ```kubectl apply -f k8s-first-app.yaml```
 
 ### Misc
@@ -55,3 +55,21 @@ mvn io.quarkus:quarkus-maven-plugin:0.19.1:create \
 ```
 
 Install GralVM with the module _native-image_ to build the native version
+
+### Start postgresql
+```
+docker run \
+    -v $PWD/postgresql.conf:/etc/postgresql/postgresql.conf \
+    --ulimit memlock=-1:-1 -it --rm=true --memory-swappiness=0 --name postgres-quarkus-hibernate  \
+    -e POSTGRES_USER=hibernate -e POSTGRES_PASSWORD=hibernate -e POSTGRES_DB=hibernate_db \
+    -p 5432:5432 \
+    postgres:10.5 -c config_file=/etc/postgresql/postgresql.conf
+``````
+docker run \
+    -it --name postgres-quarkus-hibernate  \
+    -v $(pwd)/etc/postgresql/postgresql.conf":./usr/lib/tmpfiles.d/postgresql.conf \
+    -e POSTGRES_USER=hibernate -e POSTGRES_PASSWORD=hibernate -e POSTGRES_DB=hibernate_db \
+    -p 5432:5432 \
+    postgres:10.5 /bin/bash 
+     cd /etc/postgresql
+```
