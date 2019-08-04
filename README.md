@@ -27,6 +27,7 @@ kubectl apply -f install/kubernetes/helm/helm-service-account.yaml
 helm repo add istio.io https://storage.googleapis.com/istio-release/releases/1.2.2/charts/
 helm init --service-account tiller
 helm install install/kubernetes/helm/istio-init --name istio-init --namespace istio-system
+
 helm install install/kubernetes/helm/istio --name istio --namespace istio-system \
     --values install/kubernetes/helm/istio/values-istio-demo.yaml
 ```
@@ -40,8 +41,7 @@ export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -
 export SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].nodePort}')
 export INGRESS_HOST=$(minikube ip)
 
-curl -I -HHost:k8s-first-app.example.com http://$INGRESS_HOST:$INGRESS_PORT/hello
-curl -HHost:k8s-first-app.example.com http://$INGRESS_HOST:$INGRESS_PORT/hello
+curl http://$INGRESS_HOST:$INGRESS_PORT/hello
 ```
 
 ### Create a quarkus app
@@ -53,23 +53,13 @@ mvn io.quarkus:quarkus-maven-plugin:0.19.1:create \
     -Dextensions="kotlin,resteasy-jsonb" \
     -Dpath="/hello"
 ```
-
 Install GralVM with the module _native-image_ to build the native version
 
 ### Start postgresql
 ```
-docker run \
-    -v $PWD/postgresql.conf:/etc/postgresql/postgresql.conf \
-    --ulimit memlock=-1:-1 -it --rm=true --memory-swappiness=0 --name postgres-quarkus-hibernate  \
+docker run --ulimit memlock=-1:-1 -it --rm=true --memory-swappiness=0 \
+    --name postgres-quarkus-hibernate \
     -e POSTGRES_USER=hibernate -e POSTGRES_PASSWORD=hibernate -e POSTGRES_DB=hibernate_db \
     -p 5432:5432 \
-    postgres:10.5 -c config_file=/etc/postgresql/postgresql.conf
-``````
-docker run \
-    -it --name postgres-quarkus-hibernate  \
-    -v $(pwd)/etc/postgresql/postgresql.conf":./usr/lib/tmpfiles.d/postgresql.conf \
-    -e POSTGRES_USER=hibernate -e POSTGRES_PASSWORD=hibernate -e POSTGRES_DB=hibernate_db \
-    -p 5432:5432 \
-    postgres:10.5 /bin/bash 
-     cd /etc/postgresql
+    postgres:10.5
 ```

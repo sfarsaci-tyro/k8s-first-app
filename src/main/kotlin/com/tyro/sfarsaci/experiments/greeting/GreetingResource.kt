@@ -7,32 +7,20 @@ import javax.ws.rs.Path
 import javax.ws.rs.Produces
 import javax.ws.rs.QueryParam
 import javax.ws.rs.core.MediaType
-import kotlin.math.sqrt
 
-@Path("/")
+@Path("/hello")
 class GreetingResource {
 
     private val log: org.slf4j.Logger = LoggerFactory.getLogger("GreetingResource")
 
     @GET
-    @Path("/hello")
     @Produces(MediaType.TEXT_PLAIN)
     fun hello(@QueryParam("userName") userName: String?): String {
-        log.info("Computed: ${busy()}")
         return "G'day${userName?.prependIndent(" ") ?: ""}"
     }
-
-
 
     @GET
     @Path("/busy")
     @Produces(MediaType.TEXT_PLAIN)
-    private fun busy(): Double {
-        var temp: Double = 0.0;
-        for (i in 1..1000000) {
-            temp += sqrt(i + temp + (Math.random() * 1000))
-        }
-        return temp
-    }
-
+    fun busy() = Thread.sleep(1000).run{ "G'day" }
 }

@@ -1,10 +1,7 @@
 package com.tyro.sfarsaci.experiments.person
 
 import javax.inject.Inject
-import javax.ws.rs.POST
-import javax.ws.rs.Path
-import javax.ws.rs.Produces
-import javax.ws.rs.QueryParam
+import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
 @Path("/person")
@@ -16,5 +13,10 @@ class PersonResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     fun createPerson(@QueryParam("userName") userName: String?) = personService.createPerson(userName!!)
+
+    @GET
+    @Path("{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun getPerson(@PathParam("id") id: Long) : Person = personService.getPerson(id)
 
 }
