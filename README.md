@@ -1,27 +1,19 @@
-### Run the app
-_PRE: minikube is installed and working_
-_PRE: istio is installed and it's working_
-_PRE: label the target namespace to allow sidecar injection using ```kubectl label namespace default istio-injection=enabled```_
-
-Run:
+## Run the app
+###Build
+_Requires GralVM with the native-image module and GRAALVM_HOME to be set_
 ```
-minikube start
-eval $(minikube docker-env)
+./mvnw package -Pnative
+docker build -f src/main/docker/Dockerfile.native -t k8s-first-app:0.0.20 .
 ```
-Then use the files below to manage the lifecycle:
+###Run
 ```
-buildAndPublish.sh
-buildAndRun.sh
-deployToK8s.sh
-teardown.sh
+docker run -i --rm -p 8080:8080 k8s-first-app 0.0.5
+kubectl apply -f k8s-first-app.yaml
 ```
 
-Deploy the app
-```kubectl apply -f k8s-first-app.yaml```
-
-### Misc
-
-#### Install istio
+## Misc
+### Install istio
+Download istio from https://github.com/istio/istio/releases, unpack and cd to the folder
 ```
 kubectl apply -f install/kubernetes/helm/helm-service-account.yaml
 helm repo add istio.io https://storage.googleapis.com/istio-release/releases/1.2.2/charts/
@@ -32,10 +24,13 @@ helm install install/kubernetes/helm/istio --name istio --namespace istio-system
     --values install/kubernetes/helm/istio/values-istio-demo.yaml
 ```
 
-#### Port forward kiali
+### Enable sidecar injection on namespace
+```kubectl label namespace-name istio-injection=enabled```
+
+### Port forward kiali
 `kubectl port-forward svc/kiali 20001:20001 -n istio-system`
 
-#### Hit the app through the ingress gateway using the node port
+### Hit the app through the ingress gateway using the node port
 ```
 export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
 export SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].nodePort}')
@@ -53,7 +48,6 @@ mvn io.quarkus:quarkus-maven-plugin:0.19.1:create \
     -Dextensions="kotlin,resteasy-jsonb" \
     -Dpath="/hello"
 ```
-Install GralVM with the module _native-image_ to build the native version
 
 ### Start postgresql
 ```
