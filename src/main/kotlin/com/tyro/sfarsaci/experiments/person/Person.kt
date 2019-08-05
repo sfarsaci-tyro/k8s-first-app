@@ -6,8 +6,8 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 
 @Entity
-data class Person(
+data class Person (
         @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "personSeq")
         var id: Long? = null,
-        var name: String) {
-}
+        var name: String
+)

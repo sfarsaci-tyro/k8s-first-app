@@ -4,23 +4,20 @@ import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.persistence.EntityManager
 import javax.transaction.Transactional
+import javax.ws.rs.NotFoundException
 
 @ApplicationScoped
-open class PersonServiceImpl() : PersonService {
+open class PersonServiceImpl : PersonService {
     @Inject
     private lateinit var em: EntityManager
 
-    @Transactional
-    override fun createPerson(name: String) = Person(name = name)
-            .apply {
-                em.persist(this)
-            }.id
+    override fun getPerson(id: Long) = em.find(Person::class.java, id) ?: throw NotFoundException()
 
-    override fun getPerson(id: Long) = em.find(Person::class.java, id)!!
+    @Transactional
+    override fun createPerson(name: String) = em.merge(Person(name = name)).id!!
 }
 
-
 interface PersonService {
-    fun createPerson(name: String): Long?
+    fun createPerson(name: String): Long
     fun getPerson(id: Long): Person
 }

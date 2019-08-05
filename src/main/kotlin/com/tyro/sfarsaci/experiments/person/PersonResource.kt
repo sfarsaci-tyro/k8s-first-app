@@ -10,13 +10,13 @@ class PersonResource {
     @Inject
     private lateinit var personService: PersonService
 
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    fun createPerson(@QueryParam("userName") userName: String?) = personService.createPerson(userName!!)
-
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     fun getPerson(@PathParam("id") id: Long) : Person = personService.getPerson(id)
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    fun createPerson(@QueryParam("userName") userName: String) = personService.createPerson(userName)
 
 }
