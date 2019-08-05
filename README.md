@@ -1,11 +1,11 @@
 ## Run the app
-###Build
+### Build
 _Requires GralVM with the native-image module and GRAALVM_HOME to be set_
 ```
 ./mvnw package -Pnative
 docker build -f src/main/docker/Dockerfile.native -t k8s-first-app:0.0.20 .
 ```
-###Run
+### Run
 ```
 docker run -i --rm -p 8080:8080 k8s-first-app 0.0.5
 kubectl apply -f k8s-first-app.yaml
