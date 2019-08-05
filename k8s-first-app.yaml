@@ -89,7 +89,9 @@ spec:
   http:
     - match:
         - uri:
-            prefix: /
+            prefix: /hello
+        - uri:
+            prefix: /person
       route:
         - destination:
             port:
