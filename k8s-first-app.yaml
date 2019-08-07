@@ -29,6 +29,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: k8s-first-app-service
+  annotations:
+    sidecar.istio.io/inject: "true"
 spec:
   ports:
     - port: 8080
@@ -90,6 +92,21 @@ spec:
     - match:
         - uri:
             prefix: /hello
+      fault:
+        abort:
+          httpStatus: 500
+          percent: 10
+      route:
+        - destination:
+            port:
+              number: 8080
+            host: "k8s-first-app-service"
+      # doesn't work in conjunction with fault
+      retries:
+        attempts: 5
+        perTryTimeout: 2s
+        retryOn: 5xx,gateway-error,connect-failure,refused-stream
+    - match:
         - uri:
             prefix: /person
       route:
